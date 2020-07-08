@@ -165,7 +165,11 @@ class HashTable:
         """
         # Your code here
         if self.get_load_factor() > .7:
+            print(self.get_load_factor(), ">.7")
             self.resize(self.capacity*2)
+        if self.get_load_factor() < .2 and self.get_load_factor() > 0:
+            print(self.get_load_factor(), "<.2")
+            self.resize(self.capacity//2)
         index = self.hash_index(key)
         if self.table[index] is None:
             self.table[index] = HashTableEntry(key, value)
@@ -193,11 +197,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        # index = self.hash_index(key)
-        # if index:
-        #     self.table[index] = None
-        # else:
-        #     print("Key is not found")
+        index = self.hash_index(key)
+        if index:
+            self.table[index] = None
+        else:
+            print("Key is not found")
         index = self.hash_index(key)
         if self.table[index]:
                 if type(self.table[index])== LinkedList:
@@ -238,6 +242,8 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        if new_capacity < 8:
+            new_capacity = 8
         save_data = []
         for index in range(0,self.capacity):
             if type(self.table[index])== LinkedList:
@@ -252,6 +258,19 @@ class HashTable:
         for data in save_data:
             if data is not None:
                 self.put(data.key, data.value)
+
+    def recursiveResize(self):
+        if self.get_load_factor() < .7 and self.get_load_factor() > .2:
+            return
+        else:
+            if self.get_load_factor() > .7:
+                self.resize(self.capacity*2)
+                self.recursiveResize()
+            else:
+                self.resize(self.capacity//2)
+                self.recursiveResize()
+
+   
 
 
 if __name__ == "__main__":
@@ -277,9 +296,9 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     # Test resizing
-    # old_capacity = ht.get_num_slots()
-    # ht.resize(ht.capacity * 2)
-    # new_capacity = ht.get_num_slots()
+    old_capacity = ht.get_num_slots()
+    ht.resize(ht.capacity * 2)
+    new_capacity = ht.get_num_slots()
 
     # print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
@@ -289,24 +308,10 @@ if __name__ == "__main__":
 
     print("")
 
-    # print(ht.get_load_factor())
-
-
-    ht.put("line_1", "'a")
-    ht.put("line_2", "b")
-    ht.put("line_3", "c")
-    ht.put("line_4", "d")
-    ht.put("line_5", 'e')
-    ht.put("line_6", "f")
-    ht.put("line_7", "g")
-    ht.put("line_8", 'd!"')
-    ht.put("line_9", "He hand;")
-    ht.put("line_10", "-")
-    ht.put("line_11", "So reumtum tree")
-    ht.put("line_12", "At.")
+    print(ht.get_load_factor())
     
-    for i in range(1, 13):
-        print(ht.get(f"line_{i}"))
+
+
     
 
 

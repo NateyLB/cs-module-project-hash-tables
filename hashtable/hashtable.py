@@ -1,3 +1,67 @@
+class Node:
+    def __init__(self,value):
+        self.value = value
+        self.next = None
+    def __str__(self):
+        return f"Node value={self.value}"
+class LinkedList:
+    def __init__(self):
+        self.head = None
+    # def __str__(self):
+    #     pass
+
+
+    def insert_at_head(self, value):
+        node = Node(value)
+        node.next = self.head
+        self.head = node
+
+    def insert_at_tail(self, value):
+        node = Node(value)
+        cur = self.head
+        if cur == None:
+            self.insert_at_head(value)
+        else:
+            while cur.next is not None:
+                    cur = cur.next
+            cur.next = node
+
+    def find(self, value):
+        cur = self.head
+        while cur is not None:
+            if cur.value.key == value:
+                return cur.value.value
+            cur = cur.next
+        return None
+
+    def delete(self, value):
+        cur = self.head
+        if cur.value.key == value:
+            self.head = self.head.next
+            cur.next = None
+            return cur.value.value
+        prev = cur
+        cur = cur.next
+        while cur is not None:
+            if cur.value.key == value:
+                prev.next = cur.next
+                cur.next = None
+                return cur.value.value
+            else:
+                prev = prev.next
+                cur = cur.next
+        return None
+    def printList(self):
+        cur = self.head
+        if cur == None:
+            print(None)
+        else:
+            while cur.next is not None:
+                print(cur.value)
+                cur = cur.next
+            print("")
+
+
 class HashTableEntry:
     """
     Linked List hash table key/value pair
@@ -6,6 +70,8 @@ class HashTableEntry:
         self.key = key
         self.value = value
         self.next = None
+    def __str__(self):
+        return f"HashTableEntry key={self.key}, value={self.value}"
 
 
 # Hash table can't have fewer than this many slots
@@ -16,11 +82,10 @@ class HashTable:
     """
     A hash table that with `capacity` buckets
     that accepts string keys
-
     Implement this.
     """
 
-    def __init__(self, capacity):
+    def __init__(self, capacity=MIN_CAPACITY):
         # Your code here
         self.capacity = capacity
         self.table = [None] * capacity
@@ -31,9 +96,7 @@ class HashTable:
         Return the length of the list you're using to hold the hash
         table data. (Not the number of items stored in the hash table,
         but the number of slots in the main list.)
-
         One of the tests relies on this.
-
         Implement this.
         """
         # Your code here
@@ -43,7 +106,6 @@ class HashTable:
     def get_load_factor(self):
         """
         Return the load factor for this hash table.
-
         Implement this.
         """
         # Your code here
@@ -59,7 +121,6 @@ class HashTable:
     def fnv1(self, key):
         """
         FNV-1 Hash, 64-bit
-
         Implement this, and/or DJB2.
         """
 
@@ -78,7 +139,6 @@ class HashTable:
     def djb2(self, key):
         """
         DJB2 hash, 32-bit
-
         Implement this, and/or FNV-1.
         """
         # Your code here
@@ -100,44 +160,65 @@ class HashTable:
     def put(self, key, value):
         """
         Store the value with the given key.
-
         Hash collisions should be handled with Linked List Chaining.
-
         Implement this.
         """
         # Your code here
         index = self.hash_index(key)
-        self.table[index] = value
+        if self.table[index] is None:
+            self.table[index] = HashTableEntry(key, value)
+        else:
+            if type(self.table[index])== LinkedList:
+                self.table[index].insert_at_tail(HashTableEntry(key, value))
+            else:
+                ll = LinkedList()
+                ll.insert_at_tail(self.table[index])
+                ll.insert_at_tail(HashTableEntry(key, value))
+                self.table[index] = ll
+
 
 
     def delete(self, key):
         """
         Remove the value stored with the given key.
-
         Print a warning if the key is not found.
-
         Implement this.
         """
         # Your code here
+        # index = self.hash_index(key)
+        # if index:
+        #     self.table[index] = None
+        # else:
+        #     print("Key is not found")
         index = self.hash_index(key)
-        if index:
-            self.table[index] = None
+        if self.table[index]:
+                if type(self.table[index])== LinkedList:
+                    
+                    return self.table[index].delete(key)
+                else:
+                    value = self.table[index].value
+                    self.table[index] = None
+                    return value
         else:
             print("Key is not found")
+            return None
+            
 
 
     def get(self, key):
         """
         Retrieve the value stored with the given key.
-
         Returns None if the key is not found.
-
         Implement this.
         """
         # Your code here
         index = self.hash_index(key)
-        if index:
-            return self.table[index]
+        if self.table[index]:
+                if type(self.table[index])== LinkedList:
+                    
+                    return self.table[index].find(key)
+                else:
+                    return self.table[index].value
         else:
             return None
 
@@ -146,11 +227,23 @@ class HashTable:
         """
         Changes the capacity of the hash table and
         rehashes all key/value pairs.
-
         Implement this.
         """
         # Your code here
-
+        save_data = []
+        for index in range(0,self.capacity):
+            if type(self.table[index])== LinkedList:
+                cur = self.table[index].head
+                while cur is not None:
+                    save_data.append(cur.value)
+                    cur = cur.next
+            else:
+                save_data.append(self.table[index])
+        self.capacity = new_capacity
+        self.table = [None] * self.capacity
+        for data in save_data:
+            if data is not None:
+                self.put(data.key, data.value)
 
 
 if __name__ == "__main__":
@@ -180,10 +273,15 @@ if __name__ == "__main__":
     ht.resize(ht.capacity * 2)
     new_capacity = ht.get_num_slots()
 
-    # print(f"\nResized from {old_capacity} to {new_capacity}.\n")
+    print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
     # # Test if data intact after resizing
-    # for i in range(1, 13):
-    #     print(ht.get(f"line_{i}"))
+    for i in range(1, 13):
+        print(ht.get(f"line_{i}"))
 
     print("")
+
+    print(ht.get_load_factor())
+
+
+

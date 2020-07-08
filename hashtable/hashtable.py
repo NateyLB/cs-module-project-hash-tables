@@ -164,24 +164,31 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        #check if the load factor is greaten han .7 if it is resize to a larger hash table.
         if self.get_load_factor() > .7:
-            print(self.get_load_factor(), ">.7")
             self.resize(self.capacity*2)
+        #comment this check to see the reisizing for larger than .7
+        #
         if self.get_load_factor() < .2 and self.get_load_factor() > 0:
-            print(self.get_load_factor(), "<.2")
             self.resize(self.capacity//2)
+        #
+        #get the index from hashing the key
         index = self.hash_index(key)
+        #if there is no data in the slot, add a hashTabel object
         if self.table[index] is None:
             self.table[index] = HashTableEntry(key, value)
         else:
+            #if there is a linked list in the slot, append the object
             if type(self.table[index])== LinkedList:
                 if self.get(key) is not None:
                     self.delete(key)
                 self.table[index].insert_at_tail(HashTableEntry(key, value))
             else:
+                #if there is a hash table object with same key, over write
                 if self.table[index].key == key:
                     self.delete(key)
                     self.table[index] = HashTableEntry(key, value)
+                #if there is an object in the slot, create a linked list
                 else:
                     ll = LinkedList()
                     ll.insert_at_tail(self.table[index])
@@ -197,17 +204,14 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        index = self.hash_index(key)
-        if index:
-            self.table[index] = None
-        else:
-            print("Key is not found")
+        #get index from hashing key
         index = self.hash_index(key)
         if self.table[index]:
+            #delete node in linked list
                 if type(self.table[index])== LinkedList:
-                    
                     return self.table[index].delete(key)
                 else:
+                #delete object in slot
                     value = self.table[index].value
                     self.table[index] = None
                     return value
@@ -242,9 +246,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        #min capacity = 8
         if new_capacity < 8:
             new_capacity = 8
         save_data = []
+        #save values in old hash table
         for index in range(0,self.capacity):
             if type(self.table[index])== LinkedList:
                 cur = self.table[index].head
@@ -253,12 +259,16 @@ class HashTable:
                     cur = cur.next
             else:
                 save_data.append(self.table[index])
+        #save new capacity
         self.capacity = new_capacity
+        #resize the table
         self.table = [None] * self.capacity
+        #append data to the hash table
         for data in save_data:
             if data is not None:
                 self.put(data.key, data.value)
 
+    #tried to resize recursively using to get loadFactor between .2 and .7
     def recursiveResize(self):
         if self.get_load_factor() < .7 and self.get_load_factor() > .2:
             return
@@ -300,11 +310,11 @@ if __name__ == "__main__":
     ht.resize(ht.capacity * 2)
     new_capacity = ht.get_num_slots()
 
-    # print(f"\nResized from {old_capacity} to {new_capacity}.\n")
+    print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
     # # Test if data intact after resizing
-    # for i in range(1, 13):
-    #     print(ht.get(f"line_{i}"))
+    for i in range(1, 13):
+        print(ht.get(f"line_{i}"))
 
     print("")
 

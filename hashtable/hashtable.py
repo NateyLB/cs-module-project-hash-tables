@@ -164,17 +164,25 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        if self.get_load_factor() > .7:
+            self.resize(self.capacity*2)
         index = self.hash_index(key)
         if self.table[index] is None:
             self.table[index] = HashTableEntry(key, value)
         else:
             if type(self.table[index])== LinkedList:
+                if self.get(key) is not None:
+                    self.delete(key)
                 self.table[index].insert_at_tail(HashTableEntry(key, value))
             else:
-                ll = LinkedList()
-                ll.insert_at_tail(self.table[index])
-                ll.insert_at_tail(HashTableEntry(key, value))
-                self.table[index] = ll
+                if self.table[index].key == key:
+                    self.delete(key)
+                    self.table[index] = HashTableEntry(key, value)
+                else:
+                    ll = LinkedList()
+                    ll.insert_at_tail(self.table[index])
+                    ll.insert_at_tail(HashTableEntry(key, value))
+                    self.table[index] = ll
 
 
 
@@ -269,19 +277,37 @@ if __name__ == "__main__":
         print(ht.get(f"line_{i}"))
 
     # Test resizing
-    old_capacity = ht.get_num_slots()
-    ht.resize(ht.capacity * 2)
-    new_capacity = ht.get_num_slots()
+    # old_capacity = ht.get_num_slots()
+    # ht.resize(ht.capacity * 2)
+    # new_capacity = ht.get_num_slots()
 
-    print(f"\nResized from {old_capacity} to {new_capacity}.\n")
+    # print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
     # # Test if data intact after resizing
-    for i in range(1, 13):
-        print(ht.get(f"line_{i}"))
+    # for i in range(1, 13):
+    #     print(ht.get(f"line_{i}"))
 
     print("")
 
-    print(ht.get_load_factor())
+    # print(ht.get_load_factor())
+
+
+    ht.put("line_1", "'a")
+    ht.put("line_2", "b")
+    ht.put("line_3", "c")
+    ht.put("line_4", "d")
+    ht.put("line_5", 'e')
+    ht.put("line_6", "f")
+    ht.put("line_7", "g")
+    ht.put("line_8", 'd!"')
+    ht.put("line_9", "He hand;")
+    ht.put("line_10", "-")
+    ht.put("line_11", "So reumtum tree")
+    ht.put("line_12", "At.")
+    
+    for i in range(1, 13):
+        print(ht.get(f"line_{i}"))
+    
 
 
 

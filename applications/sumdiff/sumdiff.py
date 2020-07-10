@@ -16,8 +16,7 @@ def f(x):
 
 def sumdiff(a,b,c,d):
     if f(a) + f(b) == f(c) - f(b):
-        # print("f({a}) + f({b}) = f({c)} - f({d})")
-        print(f(a)," + ", f(b), " = ", f(c), " - ", f(d))
+        print("f({a}) + f({b}) = f({c)} - f({d})")
 
 for variables in permutations:
     sumdiff(variables[0], variables[1], variables[2], variables[3])

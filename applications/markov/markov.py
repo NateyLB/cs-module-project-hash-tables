@@ -37,12 +37,6 @@ def generate_sentence():
             value= new_value
     return sentence
 
-print(generate_sentence())
-print("")
-print(generate_sentence())
-print("")
-print(generate_sentence())
-print("")
-print(generate_sentence())
-print("")
-print(generate_sentence())
+for i in range(5):
+    print(generate_sentence())
+    print("")

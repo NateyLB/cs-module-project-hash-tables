@@ -21,7 +21,7 @@ for index,word in enumerate(words):
 def generate_sentence():
     random_word = random.choice(list(markov_dict))
     sentence = random_word
-    value=random_word
+    value = random_word
     while (value[-1]!= "." and value[-1]!= "?" and value[-1]!= "!"):
         if len(value) >1:
             if ((value[-2]== "." or value[-2]== "?" or value[-2]== "!") and value[-1]== "\""):
